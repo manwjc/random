@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>教师查看</title>
+    <script src="https://unpkg.com/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui@2.3.7/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.18.0/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.3.7/lib/theme-chalk/index.css">
+</head>
+<body>
+<!-- import CSS -->
+<style>
+    body{ font-size: 30px;}
+    input[type=file] {
+        display: none;
+    }
+    .el-button {margin-bottom: 2px;}
+    .el-button--mini, .el-button--mini.is-round {
+        padding: 5px 5px;
+    }
+    .el-table_1_column_10 {word-wrap:break-word;}
+    .num-text{ height: 60px; line-height: 60px; font-size: 60px; font-weight: bold;}
+</style>
+<section class="content">
+    <div id="app">
+        <div style="width: 980px; margin: 100px auto 0;">
+            <h3 style="text-align: center; margin-bottom: 60px;">晨会分享抽签</h3>
+                <el-form id="ruleForm" label-width="120px" method="post" @submit.native.prevent>
+                        <el-row :gutter="60">
+                            <el-col :span="10">
+                                <el-form-item label="最大排数">
+                                    <el-input  class="filter-item" v-model="rowNum"></el-input>
+                                </el-form-item>
+                            </el-col>
+    
+                            <el-col :span="10">
+                                <el-form-item label="每排最大座位数">
+                                    <el-input  class="filter-item" v-model="maxNum">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="60">
+                            <el-col :span="10">
+                                <el-form-item label="已选中排：">
+                                    <div class="num-text">{{rowNumber}}</div>
+                                </el-form-item>
+                            </el-col>
+    
+                            <el-col :span="10">
+                                <el-form-item label="已选中座位：">
+                                            <div class="num-text">{{lineNumber}}</div>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="40">
+                            <el-col :span="10">
+                                <el-form-item label="">
+                                    <el-button type="primary" @click.native.prevent="selectRow">选取排</el-button>
+                                </el-form-item>
+                            </el-col>
+    
+                            <el-col :span="10">
+                                <el-form-item label="">
+                                    <el-button type="primary" @click.native.prevent="selectLine">选取座位</el-button>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                </el-form>
+        </div>
+    </div>
+</section>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            rowNum: 5,
+            maxNum: 20,
+            rowNumber: '',
+            lineNumber: ''
+        },
+        methods: {
+            dateFormat:function(row, column) {
+                var date = row[column.property];
+                if (date == undefined) {
+                    return "";
+                }
+                return moment(date).format("YYYY-MM-DD HH:mm:ss");
+            },
+            numberGrow (ele) {
+                let _this = this
+                let step = (_this.value * 10) / (_this.time * 1000)
+                let current = 0
+                let start = 0
+                let t = setInterval(function () {
+                    start += step
+                    if (start > _this.value) {
+                    clearInterval(t)
+                    start = _this.value
+                    t = null
+                    }
+                    if (current === start) {
+                    return
+                    }
+                    current = start
+                    ele.innerHTML = current.toString().replace(/(\d)(?=(?:\d{3}[+]?)+$)/g, '$1,')
+                }, 10)
+            },
+            ramdonNum(num, index) {
+                let t1 = setInterval(() => {
+                    if(index === 0) {
+                        this.rowNumber = Math.ceil(Math.random()*num);
+                    }else{
+                        this.lineNumber = Math.ceil(Math.random()*num);
+                    }
+                },50)
+                setTimeout(() => {
+                    clearInterval(t1)
+                }, 2000)
+            },
+            //lineNumber
+            selectRow() {
+                this.ramdonNum(this.rowNum, 0)
+            },
+            selectLine() {
+                this.ramdonNum(this.maxNum, 1)
+            }
+        },
+        mounted: function() {
+        }
+    });
+</script>
+</body>
+</html>
